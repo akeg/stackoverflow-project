@@ -9,6 +9,7 @@ class ServiceDialog(QDialog):
         QDialog.__init__(self, *args, **kwargs)
         self.model = QSqlTableModel()
         self.model.setTable("service_table")
+        self.model.setHeaderData(0, Qt.Horizontal, "Master name")
         self.view.setModel(self.model)
     def onAddService(self):
         self.view.show()
