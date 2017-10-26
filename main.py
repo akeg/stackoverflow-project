@@ -1,20 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtSql import *
 from PyQt5.QtWidgets import *
-from Services import *
-from MastersList import *
 
-from util import ClientDialog, createConnection, CustomProxyModel
-
-class Services(QDialog,Ui_SForm):
-    def __init__(self, parent=None):
-        QDialog.__init__(self, parent)
-        self.setupUi(self)
-
-class Masters(QDialog,Ui_Form):
-    def __init__(self, parent=None):
-        QDialog.__init__(self, parent)
-        self.setupUi(self)
+from util import *
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -42,8 +30,20 @@ class MainWindow(QMainWindow):
 
         self.model = QSqlTableModel()
         self.model.setTable("product")
+        self.Mmodel = QSqlTableModel()
+        self.Mmodel.setTable("Master_table")
+        self.SModel = QSqlTableModel()
+        self.SModel.setTable("Service_table")
+
         self.proxy = CustomProxyModel(1)
         self.proxy.setSourceModel(self.model)
+
+        self.proxy2 = MSCustomProxyModel()
+        self.proxy2.setSourceModel(self.Mmodel)
+        self.proxy3 = MSCustomProxyModel()
+        self.proxy3.setSourceModel(self.SModel)
+
+
 
         self.view.setModel(self.proxy)
         self.view.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -52,20 +52,19 @@ class MainWindow(QMainWindow):
         self.model.setHeaderData(1, Qt.Horizontal, "Time")
         self.model.setHeaderData(5, Qt.Horizontal, "Contact Number")
 
-        self.masters = Masters(self)
-        self.services = Services(self)
-
         self.clientBtn.clicked.connect(self.onAddClient)
+        self.masterBtn.clicked.connect(self.onAddMaster)
+        self.serviceBtn.clicked.connect(self.onAddService)
         self.calendarWidget.clicked.connect(self.onSelectDay)
-        self.masterBtn.clicked.connect(self.AddMaster)
-        self.serviceBtn.clicked.connect(self.AddService)
         self.onSelectDay(self.calendarWidget.selectedDate())
 
-    def AddService(self):
-        self.services.show()
+    def onAddMaster(self):
+        client = MSDialog(self)
+        client.show()
 
-    def AddMaster(self):
-        self.masters.show()
+    def onAddService(self):
+        client = MSDialog(self)
+        client.show()
 
     def onAddClient(self):
         client = ClientDialog(self)
