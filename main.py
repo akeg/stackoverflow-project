@@ -4,6 +4,17 @@ from PyQt5.QtWidgets import *
 
 from util import *
 
+class ServiceDialog(QDialog):
+    def __init__(self, *args, **kwargs):
+        QDialog.__init__(self, *args, **kwargs)
+        self.model = QSqlTableModel()
+        self.model.setTable("service_table")
+        self.view.setModel(self.model)
+    def onAddService(self):
+        self.view.show()
+
+
+
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         QMainWindow.__init__(self, *args, **kwargs)
@@ -30,20 +41,9 @@ class MainWindow(QMainWindow):
 
         self.model = QSqlTableModel()
         self.model.setTable("product")
-        self.Mmodel = QSqlTableModel()
-        self.Mmodel.setTable("Master_table")
-        self.SModel = QSqlTableModel()
-        self.SModel.setTable("Service_table")
 
         self.proxy = CustomProxyModel(1)
         self.proxy.setSourceModel(self.model)
-
-        self.proxy2 = MSCustomProxyModel()
-        self.proxy2.setSourceModel(self.Mmodel)
-        self.proxy3 = MSCustomProxyModel()
-        self.proxy3.setSourceModel(self.SModel)
-
-
 
         self.view.setModel(self.proxy)
         self.view.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -53,18 +53,9 @@ class MainWindow(QMainWindow):
         self.model.setHeaderData(5, Qt.Horizontal, "Contact Number")
 
         self.clientBtn.clicked.connect(self.onAddClient)
-        self.masterBtn.clicked.connect(self.onAddMaster)
-        self.serviceBtn.clicked.connect(self.onAddService)
         self.calendarWidget.clicked.connect(self.onSelectDay)
         self.onSelectDay(self.calendarWidget.selectedDate())
-
-    def onAddMaster(self):
-        client = MSDialog(self)
-        client.show()
-
-    def onAddService(self):
-        client = MSDialog(self)
-        client.show()
+        self.serviceBtn.clicked.connect(ServiceDialog.onAddService)
 
     def onAddClient(self):
         client = ClientDialog(self)
