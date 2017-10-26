@@ -19,7 +19,12 @@ def createConnection():
     query = QSqlQuery()
     query.exec("create table IF NOT EXISTS product(id INTEGER PRIMARY KEY AUTOINCREMENT, "
                "date_and_time DATETIME, master VARCHAR(140), service VARCHAR(140), name VARCHAR(140),"
-               "Contact_Number VARCHAR(140))")
+               "Contact_Number VARCHAR(140))"
+               "create table IF NOT EXISTS master_table(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+               "Master_name VARCHAR(20)"
+               "create table IF NOT EXIST service_table(id INTEGER PRIMARY KEY AUTOINCREMENT,"
+               "Service_name VARCHAR(30)"
+               )
 
     return True
 
@@ -60,6 +65,31 @@ class ClientDialog(QDialog):
         time = self.timeEdit.dateTime()
         return master, service, name, contact_number, time
 
+class MSDialog(QDialog):
+    def __init__(self, *args, **kwargs):
+        QDialog.__init__(self, *args, **kwargs)
+
+class MSCustomProxyModel(QIdentityProxyModel):
+    def __init__(self, *args, **kwargs):
+        QIdentityProxyModel.__init__(self, *args, **kwargs)
+
+    def rowCount(self, parent=QModelIndex()):
+        return 15
+
+    def index(self, row, column, parent=QModelIndex()):
+        return self.createIndex(row, column)
+
+    def mapToSource(self, proxyIndex):
+        if proxyIndex.isValid():
+            r = self.mapping[proxyIndex.row()]
+            if r is not None:
+                return self.sourceModel().index(r, proxyIndex.column())
+        return QModelIndex()
+
+    def mapFromSource(self, sourceIndex):
+        if sourceIndex.isValid():
+            return self.createIndex(self.mapping.index(sourceIndex.row()), sourceIndex.column())
+        return QModelIndex()
 
 class CustomProxyModel(QIdentityProxyModel):
     def __init__(self, c, *args, **kwargs):
